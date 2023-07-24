@@ -1,0 +1,45 @@
+{
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Build",
+      "request": "launch",
+      "runtimeArgs": [ "run", "build" ],
+      "runtimeExecutable": "npm",
+      "skipFiles": [ "<node_internals>/**" ],
+      "type": "node"
+    },
+    {
+      "name": "Develop",
+      "request": "launch",
+      "runtimeArgs": [ "run", "develop" ],
+      "runtimeExecutable": "npm",
+      "skipFiles": [ "<node_internals>/**" ],
+      "type": "node"
+    },
+    {
+      "name": "Clean",
+      "request": "launch",
+      "runtimeArgs": [ "run", "clean" ],
+      "runtimeExecutable": "npm",
+      "skipFiles": [ "<node_internals>/**" ],
+      "type": "node"
+    },
+    {
+      "name": "Test",
+      "request": "launch",
+      "runtimeArgs": [ "run", "test" ],
+      "runtimeExecutable": "npm",
+      "skipFiles": [ "<node_internals>/**" ],
+      "type": "node"
+    },
+    {
+      "name": "Launch Chrome using localhost",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8080",
+      "webRoot": "${workspaceFolder}"
+    }
+  ]
+}

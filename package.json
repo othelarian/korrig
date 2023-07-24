@@ -1,0 +1,31 @@
+{
+  "name": "korrig",
+  "version": "0.1.0",
+  "description": "",
+  "scripts": {
+    "build": "cake build",
+    "clean": "cake clean",
+    "develop": "cake develop",
+    "test": "cake testing"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/othelarian/korrig.git"
+  },
+  "author": "othelarian",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/othelarian/korrig/issues"
+  },
+  "homepage": "https://github.com/othelarian/korrig#readme",
+  "devDependencies": {
+    "bach": "^2.0.1",
+    "chokidar": "^3.5.3",
+    "coffeescript": "^2.7.0",
+    "esbuild": "^0.18.16",
+    "fs-extra": "^11.1.1",
+    "livescript": "^1.6.0",
+    "pug": "^3.0.2",
+    "sass": "^1.64.1"
+  }
+}
