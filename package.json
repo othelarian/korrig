@@ -6,6 +6,7 @@
     "build": "cake build",
     "clean": "cake clean",
     "develop": "cake develop",
+    "github": "cake ghpages",
     "test": "cake testing"
   },
   "repository": {
