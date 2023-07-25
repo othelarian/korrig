@@ -22,10 +22,14 @@ compile = (lg, data, cb) ->
         #
         ''
         #
-      when 'pug-rend' then pug.renderFile ""
+      when 'pug'
+        if data.top then pug.compileFile 'src/index.pug'
+        else
+          opts = { compileDebug: false, name: data.name }
+          pug.compileFileClient data.path, opts
     #
     #
-    cb null, 3
+    cb null, res
     #
   catch err
     console.error "!!!!!!\n\nCOMPILATION ERROR: #{e}"
@@ -41,6 +45,13 @@ task 'build', '', ->
   #
   console.log 'build task ...'
   #
+  compile 'pug', { top: yes }, (e, res) ->
+    #
+    console.log res
+    #
+    console.log '###############'
+    console.log res()
+    #
   #
   #
 
@@ -60,7 +71,7 @@ task 'clean', '', ->
   lst = ['tmp']
   rem = (path, cb) -> fse.remove path, cb
   rems = lst.map((path) -> (cb) -> rem path, cb)
-  (bach.series.apply null, rems) finalCb
+  (bach.series rems) finalCb
 
 task 'testing', '', ->
   #
