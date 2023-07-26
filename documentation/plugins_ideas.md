@@ -3,6 +3,8 @@
 This is a list of plugins I already have in mind for Korrig.
 
 - whiteboard (I really want this one)
+- markdown editor
+- style customizer
 - diceroller (include the One?)
 - character sheets, with a system similar to Fari's
 - Rune-like map (with a map editor of course)

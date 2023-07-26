@@ -1,7 +1,20 @@
 doctype html
 html(lang='en')
   head
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width,initial-scale=1')
+    meta(name='description', content='')
+    meta(name='version', content=package.version)
+    meta(name='application-name', content=package.name)
     title Korrig, another quine wiki
-  body
+    style#hms= style
+    script#hst(type='application/json')!= data
+    script#hsi(type='text/javascript')!= mirror
+    script#hsm(type='text/javascript')!= app
+  body(onload='Korrig.init()')
+    //
+    // TODO: put the minimal html needed
+    //
     p plop
     #tt2
+      button(onclick='Korrig.save()') Save

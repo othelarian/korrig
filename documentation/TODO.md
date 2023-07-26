@@ -6,27 +6,34 @@ Project Description
 
 ### Todo
 
-- [ ] Article system/plugin  
-- [ ] Tags system/plugin  
-- [ ] download mechanic (DM)  
-- [ ] server PUT mechanic  
-- [ ] Event System (EV)  
 - [ ] Add heroicons/lucide  
+- [ ] Article system/plugin  
+- [ ] GH pages task🚀  
+- [ ] Article links  
+- [ ] Add plugins to build task🚀  
+- [ ] Tags system/plugin☕  
+- [ ] Event System (EV)☕  
 
 ### Prepared
 
+- [ ] State system  
+- [ ] splashscreen✨  
+- [ ] panels✨  
 - [ ] Develop task🚀  
-- [ ] Testing task🚀  
-- [ ] main script  
 - [ ] Spot test✅  
 
 ### In Progress
 
-- [ ] Create the project structure  
-  - [ ] Build task🚀  
-- [ ] Pug index.html  
+- [ ] Testing task🚀  
+- [ ] server PUT mechanic☕  
+- [ ] Detect server  
 
 ### Done ✓
 
+- [x] download mechanic (DM)☕  
+- [x] Create the project structure  
+  - [x] Build task🚀  
+- [x] Pug index.html  
+- [x] main script  
 - [x] Clean task🚀  
 
