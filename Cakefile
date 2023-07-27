@@ -1,8 +1,7 @@
 # REQUIRES ######################################
 
 bach = require 'bach'
-#coffeePlugin = require 'esbuild-coffeescript'
-#esbuild = require 'esbuild'
+chokidar = require 'chokidar'
 fse = require 'fs-extra'
 livescript = require 'livescript'
 pug = require 'pug'
@@ -13,7 +12,7 @@ terser = require 'terser'
 
 sgl = {
   cfg: null
-  stats: yes
+  dev: no
   korrig: {
     app: ''
     data: '{}'
@@ -21,6 +20,8 @@ sgl = {
     package: null
     style: ''
   }
+  src: {}
+  stats: yes
   tmp: {
     css: ''
     html: ''
@@ -76,13 +77,6 @@ buildKorrig = (cbp) ->
   getPackage = (cb) ->
     sgl.korrig.package = fse.readJsonSync './package.json'
     cb null, 11
-  linkAll = (cb) ->
-    try
-      res = sgl.top sgl.korrig
-      fse.writeFileSync './builds/korrig.html', res
-      cb null, 2
-    catch e
-      cb e, null
   moveData = (cb) ->
     sgl.korrig.app = sgl.tmp.js
     sgl.korrig.style = sgl.tmp.css
@@ -124,6 +118,41 @@ buildKorrig = (cbp) ->
   if sgl.stats then fns.push((cb) -> showResult cb)
   (bach.series fns) cbp
 
+linkAll = (cb) ->
+  try
+    res = sgl.top sgl.korrig
+    fse.writeFileSync './builds/korrig.html', res
+    cb null, 2
+  catch e
+    cb e, null
+
+testServer = (_) ->
+  cwd = process.cwd()
+  path = require 'path'
+  app = (require 'http').createServer (req, res) ->
+    res.writeHead 200, { 'Content-Type': 'text/html', 'dav': 1 }
+    if req.method is 'PUT'
+      #
+      # TODO: validate the good work of the testing server
+      #
+      data = ''
+      req.on 'data', chunk -> data += chunk
+      #
+      req.on 'end', ->
+        savePath = path.resolve cwd, 'builds', 'put-save.html'
+        fse.writeFile savePath, data, (err) ->
+          if err then throw err
+          outKb = (UInt8Array.from Buffer.from(data)).byteLength
+          outKb = ((outKb * 0.000977).toFixed 3) + 'kB'
+          console.info savePath, outKb
+      #
+    url = req.url?.substring 1
+    if url? and url.match(/\.\w+$/) and fse.existsSync(path.resolve cwd, url)
+      res.end fse.readFileSync(path.resolve cwd, url)
+    else res.end fse.readFileSync('builds/korrig.html')
+  app.listen 3000, 'localhost'
+  console.log 'Test server running at http://localhost:3000'
+
 # TASKS #########################################
 
 task 'build', 'build a production ready version of the app', -> buildKorrig finalCb
@@ -134,8 +163,8 @@ task 'clean', '', ->
   rems = lst.map((path) -> (cb) -> rem path, cb)
   (bach.series rems) finalCb
 
-task 'develop', 'build the app, launch a dev server, and watch to recompile the source', ->
-  #
+task 'develop', '', ->
+  sgl.dev = yes
   #
   # TODO: use chokidar to compile
   #
@@ -143,24 +172,45 @@ task 'develop', 'build the app, launch a dev server, and watch to recompile the 
   #
   # TODO: compile some pug
   #
-  console.log 'develop task ...'
-  #
-  compPug = (cb) -> compile 'pug', { path: 'src/index.pug' }, cb
-  testTerser = (cb) ->
+  launchChokidar = (cb) ->
     #
-    console.log sgl.tmp.html
+    # TODO: put everything needed into chokidar
     #
-    try
-      tt = await terser.minify sgl.tmp.html
+    sgl.src['src/index.pug'] = { lg: 'pug' }
+    sgl.src['src/style.sass'] = { lg: 'sass' }
+    sg.src['src/main.ls'] = { lg: 'ls' }
+    #
+    chokidar.watch Object.keys(sgl.src), { awaitWriteFinish: true }
+    chokidar.on 'change', (path) ->
       #
-      console.log tt
-      fse.writeFileSync 'builds/tmp.js', tt.code
       #
-      cb null, 42
-    catch e
-      cb e, null
+      toExec =
+        if path is 'src/index.pug'
+          #
+          #
+        else
+          #
+          # TODO: handle the plugin case
+          #
+          moveWatchData = (cb) ->
+            #
+            #
+          #
+          [
+            (cb) -> compile sgl.src[path].lg, { path }, cb
+            (cb) -> moveWatchData cb
+          ]
+        #
+      #
+      toExec.push((cb) -> linkAll cb
+      (bach.series toExec) finalCb
+    #
+    chokidar.on 'error', (e) ->
+      console.log 'CHOKIDAR ERROR:\n'
+      console.log e
+    #
   #
-  (bach.series compPug, testTerser) finalCb
+  (bach.series buildKorrig, launchChokidar, testServer) finalCb
   #
 
 task 'ghpages', '', ->
@@ -176,30 +226,4 @@ task 'ghpages', '', ->
   (bach.series buildKorrig, moveToDoc) finalCb
 
 task 'testing', 'build & run a test server', ->
-  testServer = (_) ->
-    cwd = process.cwd()
-    path = require 'path'
-    app = (require 'http').createServer (req, res) ->
-      res.writeHead 200, { 'Content-Type': 'text/html', 'dav': 1 }
-      if req.method is 'PUT'
-        #
-        # TODO: validate the good work of the testing server
-        #
-        data = ''
-        req.on 'data', chunk -> data += chunk
-        #
-        req.on 'end', ->
-          savePath = path.resolve cwd, 'builds', 'put-save.html'
-          fse.writeFile savePath, data, (err) ->
-            if err then throw err
-            outKb = (UInt8Array.from Buffer.from(data)).byteLength
-            outKb = ((outKb * 0.000977).toFixed 3) + 'kB'
-            console.info savePath, outKb
-        #
-      url = req.url?.substring 1
-      if url? and url.match(/\.\w+$/) and fse.existsSync(path.resolve cwd, url)
-        res.end fse.readFileSync(path.resolve cwd, url)
-      else res.end fse.readFileSync('builds/korrig.html')
-    app.listen 3000, 'localhost'
-    console.log 'Test server running at http://localhost:3000'
   (bach.series buildKorrig, testServer) finalCb

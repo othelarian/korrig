@@ -2,9 +2,7 @@
 
 Project Description
 
-<em>[TODO.md spec & Kanban Board](https://bit.ly/3fCwKfM)</em>
-
-### Todo
+### TODO
 
 - [ ] Add heroicons/lucide  
 - [ ] Article system/plugin  
@@ -12,14 +10,13 @@ Project Description
 - [ ] Article links  
 - [ ] Add plugins to build task🚀  
 - [ ] Tags system/plugin☕  
-- [ ] Event System (EV)☕  
+- [ ] Markdown plugin
 
 ### Prepared
 
 - [ ] State system  
 - [ ] splashscreen✨  
 - [ ] panels✨  
-- [ ] Develop task🚀  
 - [ ] Spot test✅  
 
 ### In Progress
@@ -27,12 +24,13 @@ Project Description
 - [ ] Testing task🚀  
 - [ ] server PUT mechanic☕  
 - [ ] Detect server  
+- [ ] Develop task🚀  
 
 ### Done ✓
 
 - [x] download mechanic (DM)☕  
 - [x] Create the project structure  
-  - [x] Build task🚀  
+- [x] Build task🚀  
 - [x] Pug index.html  
 - [x] main script  
 - [x] Clean task🚀  
