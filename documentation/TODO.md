@@ -10,7 +10,7 @@ Project Description
 - [ ] Article links  
 - [ ] Add plugins to build task🚀  
 - [ ] Tags system/plugin☕  
-- [ ] Markdown plugin
+- [ ] Markdown plugin  
 
 ### Prepared
 
@@ -21,13 +21,13 @@ Project Description
 
 ### In Progress
 
-- [ ] Testing task🚀  
 - [ ] server PUT mechanic☕  
 - [ ] Detect server  
-- [ ] Develop task🚀  
 
 ### Done ✓
 
+- [x] Testing task🚀  
+- [x] Develop task🚀  
 - [x] download mechanic (DM)☕  
 - [x] Create the project structure  
 - [x] Build task🚀  

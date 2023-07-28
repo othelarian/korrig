@@ -20,7 +20,11 @@ sgl = {
     package: null
     style: ''
   }
-  src: {}
+  src: { # lg: '' , sgl: '', (pug => name: '')
+    'src/index.pug': {}
+    'src/style.sass': {}
+    'src/main.ls': {}
+  }
   stats: yes
   tmp: {
     css: ''
@@ -34,17 +38,21 @@ sgl = {
 
 compile = (lg, data, cb) ->
   try
-    switch lg
-      when 'ls'
-        code = await fse.readFile data.path, { encoding: 'utf-8' }
-        sgl.tmp.js = (await terser.minify(livescript.compile code, {})).code
-      when 'pug'
-        if data.top then sgl.top = pug.compileFile 'src/index.pug'
-        else
+    if data.top then sgl.top = pug.compileFile 'src/index.pug'
+    else
+      r = switch lg
+        when 'ls'
+          code = await fse.readFile data.path, { encoding: 'utf-8' }
+          (await terser.minify(livescript.compile code, {})).code
+        when 'pug'
           opts = { compileDebug: no, name: data.name }
           if data.inline? then opts.inlineRuntimeFunctions = data.inline
-          sgl.tmp.html = (await terser.minify(pug.compileFileClient data.path, opts)).code
-      when 'sass' then sgl.tmp.css = (sass.compile data.path, { style: 'compressed' }).css
+          (await terser.minify(pug.compileFileClient data.path, opts)).code
+        when 'sass' then (sass.compile data.path, { style: 'compressed' }).css
+      p = data.sgl.split '.'
+      switch p.length
+        when 1 then sgl.korrig[p[0]] = r
+        when 2 then sgl.korrig[p[0]][p[1]] = r
     cb null, (if data.cbid? then data.cbid else 3)
   catch err
     console.error "!!!!!!\n\nCOMPILATION ERROR: #{err}"
@@ -54,7 +62,7 @@ finalCb = (e, r) ->
   if e?
     console.log "ERROR:\nResults: #{r}\n\n"
     console.log e
-  else console.log '\n### TASK COMPLETE ###\n'
+  else if not sgl.dev then console.log '\n### TASK COMPLETE ###\n'
 
 # SUBTASKS ######################################
 
@@ -77,11 +85,6 @@ buildKorrig = (cbp) ->
   getPackage = (cb) ->
     sgl.korrig.package = fse.readJsonSync './package.json'
     cb null, 11
-  moveData = (cb) ->
-    sgl.korrig.app = sgl.tmp.js
-    sgl.korrig.style = sgl.tmp.css
-    sgl.korrig.mirror = sgl.tmp.html
-    cb null, 1
   showResult = (cb) ->
     size = ((fse.statSync 'builds/korrig.html').size *  0.000977).toFixed(3)
     console.log '--------------------------------------------------'
@@ -91,32 +94,36 @@ buildKorrig = (cbp) ->
     cb null, 99
   fns = [
     # create the builds dir if necessary
-    (cb) -> createDirBuild cb
+    createDirBuild
     # get the configuration
-    (cb) -> getCfg cb
+    getCfg
     # get data from the package.json
-    (cb) -> getPackage cb
+    getPackage
     # get the main LiveScript
-    (cb) -> compile 'ls', { path: 'src/main.ls', cbid: 24 }, cb
+    compileApp
     # get the main style
-    (cb) -> compile 'sass', { path: 'src/style.sass' }, cb
+    compileStyle
     # get the pug function in JS format for the save capacity
-    (cb) -> compile 'pug', { path: 'src/index.pug', name: 'korrigHtml' }, cb
-    # move the scripts and the css into the korrig for the future link
-    (cb) -> moveData cb
+    compileHtml
     #
     # TODO: include here the plugins
     #
     # TODO: for pug plugin part => data.inline = no
     #
     # get the pug core function to link all
-    (cb) -> compile 'pug', { top: yes }, cb
+    compileTop
     # link everything together
-    (cb) -> linkAll cb
+    linkAll
   ]
   # show some data about the build
-  if sgl.stats then fns.push((cb) -> showResult cb)
+  if sgl.stats then fns.push showResult
   (bach.series fns) cbp
+
+compileApp = (cb) -> compile 'ls', { path: 'src/main.ls', sgl: 'app', cbid: 24 }, cb
+compileStyle = (cb) -> compile 'sass', { path: 'src/style.sass', sgl: 'style' }, cb
+compileHtml = (cb) ->
+  compile 'pug', { path: 'src/index.pug', sgl: 'mirror', name: 'korrigHtml' }, cb
+compileTop = (cb) -> compile 'pug', { top: yes }, cb
 
 linkAll = (cb) ->
   try
@@ -151,7 +158,7 @@ testServer = (_) ->
       res.end fse.readFileSync(path.resolve cwd, url)
     else res.end fse.readFileSync('builds/korrig.html')
   app.listen 3000, 'localhost'
-  console.log 'Test server running at http://localhost:3000'
+  console.log 'Test server running at http://localhost:3000\n'
 
 # TASKS #########################################
 
@@ -165,53 +172,32 @@ task 'clean', '', ->
 
 task 'develop', '', ->
   sgl.dev = yes
-  #
-  # TODO: use chokidar to compile
-  #
-  # TODO: develop task
-  #
-  # TODO: compile some pug
-  #
   launchChokidar = (cb) ->
-    #
-    # TODO: put everything needed into chokidar
-    #
-    sgl.src['src/index.pug'] = { lg: 'pug' }
-    sgl.src['src/style.sass'] = { lg: 'sass' }
-    sg.src['src/main.ls'] = { lg: 'ls' }
-    #
-    chokidar.watch Object.keys(sgl.src), { awaitWriteFinish: true }
-    chokidar.on 'change', (path) ->
-      #
-      #
-      toExec =
-        if path is 'src/index.pug'
-          #
-          #
+    watcher = chokidar.watch Object.keys(sgl.src), { awaitWriteFinish: true }
+    watcher.on 'change', (path) ->
+      path = path.replace '\\', '/'
+      console.log "recompiling: #{path}"
+      toExec = switch path
+        when 'src/index.pug' then [ compileHtml, compileTop ]
+        when 'src/style.sass' then [ compileStyle ]
+        when 'src/main.ls' then [ compileApp ]
         else
           #
-          # TODO: handle the plugin case
+          # TODO: plugin handling zone
           #
-          moveWatchData = (cb) ->
-            #
-            #
+          opts = { path, sgl: sgl.src[path].sgl }
           #
-          [
-            (cb) -> compile sgl.src[path].lg, { path }, cb
-            (cb) -> moveWatchData cb
-          ]
-        #
-      #
-      toExec.push((cb) -> linkAll cb
+          console.debug 'moving into plugin section'
+          console.debug opts
+          #
+          [ (cb) -> compile sgl.src[path].lg, opts, cb ]
+      toExec.push linkAll
       (bach.series toExec) finalCb
-    #
-    chokidar.on 'error', (e) ->
+    watcher.on 'error', (e) ->
       console.log 'CHOKIDAR ERROR:\n'
       console.log e
-    #
-  #
+    cb null, 31
   (bach.series buildKorrig, launchChokidar, testServer) finalCb
-  #
 
 task 'ghpages', '', ->
   sgl.stats = no
