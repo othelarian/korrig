@@ -11,42 +11,51 @@ function q-sel s, a = no
   if a then document.querySelectorAll s
   else document.querySelector s
 
+# STORE ######################################
+
+KorrigState =
+  notif-id: -1
+  server-op: no
+
 # APP ########################################
 
 Korrig =
   init: !->
-    console.log 'this is the init'
+    console.log 'init Korrig App'
+    Korrig.save-detect!
+  notif-create: (type = \info, text = void, html = void) !->
     #
-    # TODO: make a true init
+    # TODO: dev ok, test not done yet
     #
-    # TODO: detect if there's a server to save
+    attrs =
+      class: "kor-notif-#type"
+      title: 'Click to close'
+      id: KorrigState.notif-get-id!
+      onclick: "Korrig.notifRem(\#kor-notif-#{attrs.id})"
+    c-elt \div, attrs, text, html
+  notif-get-id: -> KorrigState.notif-id += 1
+  notif-rem: (id) !-> q-sel id .remove!
+  save-detect: !->
+    #
+    # TODO: detect if the app is on a save server
     #
     if location.protocol.startsWith 'http'
-      fetch root, { method: 'OPTIONS' }
+      #
+      # TODO: what is root?
+      #
+      fetch location.pathname, { method: 'OPTIONS' }
         .then res ->
-          #
           if res.ok and res.headers.get 'dav'
+            KorrigState.server-op: yes
             #
-            console.log 'res ok, dav ok'
+            # TODO: activate the button?
             #
           else
-            #
-            #
-            console.log 'cannot save on the server'
-            #
-      #
-      # TODO
-      #
-      console.log 'fetching...'
-      #
-    #
-  notify: (content) !->
-    #
-    # TODO: create and show the notification
-    #
-    #
-    console.log 'create a notification'
-    #
+            Korrig.notif-create \warning 'Warning! Failed to contact the save server'
+        .catch e ->
+          console.log 'Korrig error:'
+          console.log e
+          Korrig.notif-create \error 'Error on trying to contact the server'
   save-dl: !->
     attrs =
       href: 'data:text/html;charset:utf-8,' + encodeURIComponent Korrig.save-gen!
@@ -69,7 +78,29 @@ Korrig =
     #
     # TODO: trigger the sending to the server
     #
-    c = Korrig.save-gen!
-    #
+    fetch location.pathname, { method: \PUT, body: Korrig.save-gen! }
+      .then resp ->
+        #
+        resp.text!.then txt -> { ok: resp.ok, status: resp.status, text: txt }
+        #
+      .then res ->
+        #
+        if not res.ok
+          #
+          console.log 'do somethin'
+          #
+        else
+          #
+          console.log 'everything\'s fine'
+          #
+        #
+      .catch e ->
+        console.log 'Korrig error:'
+        console.log e
+        Korrig.notif-create \error 'Failed to save on the server!'
+
+# EXPORT #####################################
+
+window.KorrigState = KorrigState
 
 window.Korrig = Korrig

@@ -20,10 +20,13 @@ Project Description
 
 ### In Progress
 
-- [ ] Notification system  
-- [ ] Detect server  
 - [ ] server PUT mechanic☕  
 - [ ] Add lucide icons  
+
+### To Test
+
+- [ ] Detect server  
+- [ ] Notification system  
 
 ### Done ✓
 
