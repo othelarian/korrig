@@ -12,9 +12,18 @@ html(lang='en')
     script#hsi(type='text/javascript')!= mirror
     script#hsm(type='text/javascript')!= app
   body(onload='Korrig.init()')
+    svg(xmlns='http://www.w3.org/2000/svg')
+      defs!= icons
     //
     // TODO: put the minimal html needed
     //
-    p plop
     #tt2
       button(onclick='Korrig.save()') Save
+    //
+    #kor-main-menu
+    //
+    #kor-left
+      p(style='font-family:"lucide"') &#xf138;
+    //
+    #kor-right
+    //

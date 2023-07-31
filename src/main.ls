@@ -22,12 +22,30 @@ Korrig =
     # TODO: detect if there's a server to save
     #
     if location.protocol.startsWith 'http'
-      #fetch root, 
+      fetch root, { method: 'OPTIONS' }
+        .then res ->
+          #
+          if res.ok and res.headers.get 'dav'
+            #
+            console.log 'res ok, dav ok'
+            #
+          else
+            #
+            #
+            console.log 'cannot save on the server'
+            #
       #
       # TODO
       #
       console.log 'fetching...'
       #
+    #
+  notify: (content) !->
+    #
+    # TODO: create and show the notification
+    #
+    #
+    console.log 'create a notification'
     #
   save-dl: !->
     attrs =

@@ -41,3 +41,7 @@ If you meet any issue with Korrig you can [fill an issue](https://github.com/oth
 ## Develop mode
 
 TODO
+
+## Credits
+
+Icons from: [lucide.dev](https://lucide.dev)

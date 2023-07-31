@@ -4,6 +4,7 @@ bach = require 'bach'
 chokidar = require 'chokidar'
 fse = require 'fs-extra'
 livescript = require 'livescript'
+lucide = require 'lucide-static'
 pug = require 'pug'
 sass = require 'sass'
 terser = require 'terser'
@@ -16,14 +17,15 @@ sgl = {
   korrig: {
     app: ''
     data: '{}'
+    font: ''
     mirror: ''
     package: null
     style: ''
   }
   src: { # lg: '' , sgl: '', (pug => name: '')
     'src/index.pug': {}
-    'src/style.sass': {}
     'src/main.ls': {}
+    'src/style.sass': {}
   }
   stats: yes
   tmp: {
@@ -82,6 +84,23 @@ buildKorrig = (cbp) ->
       cfg[key] = value for key, value of cfgov
     sgl.cfg = cfg
     cb null, 10
+  getFont = (cb) ->
+    try
+      #
+      ft = fse.readFileSync 'node_modules/lucide-static/font/lucide.woff'
+      sgl.korrig.font =
+        '@font-face{font-family:\'lucide\';font-weight:normal;' +
+        #'src:url(data:application/x-font-woff;' +
+        'src:url(data:font/woff;)' +
+        "base64,#{ft.toString 'base64'})" +
+        'font-style:normal;}'
+      #
+      # TODO: check the font
+      #
+      cb null, 11
+    catch e
+      console.log 'ERROR on getFont'
+      cb e, null
   getPackage = (cb) ->
     sgl.korrig.package = fse.readJsonSync './package.json'
     cb null, 11
@@ -99,6 +118,8 @@ buildKorrig = (cbp) ->
     getCfg
     # get data from the package.json
     getPackage
+    # get the lucide font ready
+    getFont
     # get the main LiveScript
     compileApp
     # get the main style
@@ -213,3 +234,18 @@ task 'ghpages', '', ->
 
 task 'testing', 'build & run a test server', ->
   (bach.series buildKorrig, testServer) finalCb
+
+task 'try', '', ->
+  #
+  console.log 'for Cakefile dev purpose'
+  #
+  clip = (h, s) ->
+    s = substring s.search '>'
+    console.debug s
+    #
+  #
+  lst = [
+    'arrowBigUpDash'
+  ]
+  lst = lst.map (e) -> clip e, lucide[e]
+  console.debug lst
