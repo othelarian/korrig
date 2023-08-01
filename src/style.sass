@@ -1,5 +1,6 @@
 body
   font-size: 12px
+  margin: 0
 
 use
   width: 24px
@@ -9,3 +10,58 @@ use
   stroke-width: 2
   stroke-linecap: round
   stroke-linejoin: round
+
+.panel
+  border: solid 1px black
+  width: 49vw
+  height: 90vh
+
+  &#kor-left
+    float: left
+    background: yellow
+  
+  &#kor-right
+    float: right
+    background: pink
+
+@media (max-width: 980px)
+  .panel
+    width: calc(99vw - 80px)
+
+#kor-notifs
+  position: absolute
+  z-index: 100
+  top: 0
+  width: 99vw
+
+  div
+    width: 30%
+    min-width: 300px
+    padding: 5px
+    border: solid 1px black
+    margin: 4px auto auto
+    text-align: center
+    font-size: 14px
+    cursor: pointer
+
+    &.kor-notif-warning
+      background: orange
+
+    &.kor-notif-error
+      background: red
+      color: white
+
+#kor-splash
+  position: absolute
+  top: 0
+  bottom: 0
+  left: 0
+  right: 0
+  background: white
+  padding-top: 20px
+
+  div
+    font-size: 20px
+    font-weight: bold
+    text-align: center
+    margin-top: 10px

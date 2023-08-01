@@ -23,36 +23,45 @@ Korrig =
   init: !->
     console.log 'init Korrig App'
     Korrig.save-detect!
+    #
+    # TODO: move from splashscreen to panels
+    #
+    # TODO: load plugins
+    #
+    addEventListener \resize, Korrig.resizing
+    #
+    q-sel '\#kor-splash' .style.display = \none
   notif-create: (type = \info, text = void, html = void) !->
-    #
-    # TODO: dev ok, test not done yet
-    #
+    id = Korrig.notif-get-id!
     attrs =
       class: "kor-notif-#type"
       title: 'Click to close'
-      id: KorrigState.notif-get-id!
-      onclick: "Korrig.notifRem(\#kor-notif-#{attrs.id})"
-    c-elt \div, attrs, text, html
+      id: "kor-notif-#{id}"
+      onclick: "Korrig.notifRem('\#kor-notif-#{id}')"
+    e = c-elt \div, attrs, text, html
+    q-sel '#kor-notifs' .appendChild e
   notif-get-id: -> KorrigState.notif-id += 1
   notif-rem: (id) !-> q-sel id .remove!
+  resizing: !->
+    #
+    # TODO: handle resizing on panels
+    #
+    console.log 'resizing occured'
+    #
   save-detect: !->
-    #
-    # TODO: detect if the app is on a save server
-    #
     if location.protocol.startsWith 'http'
-      #
-      # TODO: what is root?
-      #
       fetch location.pathname, { method: 'OPTIONS' }
-        .then res ->
+        .then (res) ->
           if res.ok and res.headers.get 'dav'
             KorrigState.server-op: yes
             #
             # TODO: activate the button?
             #
+            console.log 'save server ok'
+            #
           else
             Korrig.notif-create \warning 'Warning! Failed to contact the save server'
-        .catch e ->
+        .catch (e) ->
           console.log 'Korrig error:'
           console.log e
           Korrig.notif-create \error 'Error on trying to contact the server'
@@ -75,26 +84,19 @@ Korrig =
       style: q-sel '#hms' .textContent
     korrigHtml dt
   save-put: !->
-    #
-    # TODO: trigger the sending to the server
-    #
     fetch location.pathname, { method: \PUT, body: Korrig.save-gen! }
-      .then resp ->
-        #
-        resp.text!.then txt -> { ok: resp.ok, status: resp.status, text: txt }
-        #
-      .then res ->
-        #
+      .then (resp) ->
+        resp.text!.then (txt) -> { ok: resp.ok, status: resp.status, text: txt }
+      .then (res) ->
         if not res.ok
-          #
-          console.log 'do somethin'
-          #
+          throw(if res.text? then res.text else "Status: #{res.status}")
         else
+          #
+          # TODO: do something to get that the file is now saved on the server
           #
           console.log 'everything\'s fine'
           #
-        #
-      .catch e ->
+      .catch (e) ->
         console.log 'Korrig error:'
         console.log e
         Korrig.notif-create \error 'Failed to save on the server!'

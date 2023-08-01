@@ -5,7 +5,6 @@ Project Description
 ### TODO
 
 - [ ] Article system/plugin  
-- [ ] GH pages task🚀  
 - [ ] Article links  
 - [ ] Add plugins to build task🚀  
 - [ ] Tags system/plugin☕  
@@ -14,22 +13,25 @@ Project Description
 ### Prepared
 
 - [ ] Store system  
-- [ ] splashscreen✨  
-- [ ] panels✨  
 - [ ] Spot test✅  
 
 ### In Progress
 
-- [ ] server PUT mechanic☕  
+- [ ] resizing (panels)  
+- [ ] panels✨  
 - [ ] Add lucide icons  
+- [ ] GH pages task🚀  
 
 ### To Test
 
-- [ ] Detect server  
-- [ ] Notification system  
 
 ### Done ✓
 
+- [x] splashscreen✨  
+- [x] server PUT mechanic☕  
+- [x] Dev server  
+- [x] Detect server  
+- [x] Notification system  
 - [x] Testing task🚀  
 - [x] Develop task🚀  
 - [x] download mechanic (DM)☕  

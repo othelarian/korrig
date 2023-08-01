@@ -14,6 +14,7 @@ terser = require 'terser'
 sgl = {
   cfg: null
   dev: no
+  gh: no
   korrig: {
     app: ''
     data: '{}'
@@ -111,31 +112,40 @@ buildKorrig = (cbp) ->
     console.log "version: #{sgl.korrig.package.version}, size: #{size}kB"
     console.log '--------------------------------------------------'
     cb null, 99
-  fns = [
-    # create the builds dir if necessary
-    createDirBuild
-    # get the configuration
-    getCfg
-    # get data from the package.json
-    getPackage
-    # get the lucide font ready
-    getFont
-    # get the main LiveScript
-    compileApp
-    # get the main style
-    compileStyle
-    # get the pug function in JS format for the save capacity
-    compileHtml
-    #
-    # TODO: include here the plugins
-    #
-    # TODO: for pug plugin part => data.inline = no
-    #
-    # get the pug core function to link all
-    compileTop
-    # link everything together
-    linkAll
-  ]
+  fns =
+    if sgl.gh
+      [
+        # get special store for the gh pages
+        #getGHStore
+        # link the doc but under 'index.html'
+        linkAll
+      ]
+    else
+      [
+        # create the builds dir if necessary
+        createDirBuild
+        # get the configuration
+        getCfg
+        # get data from the package.json
+        getPackage
+        # get the lucide font ready
+        #getFont
+        # get the main LiveScript
+        compileApp
+        # get the main style
+        compileStyle
+        # get the pug function in JS format for the save capacity
+        compileHtml
+        #
+        # TODO: include here the plugins
+        #
+        # TODO: for pug plugin part => data.inline = no
+        #
+        # get the pug core function to link all
+        compileTop
+        # link everything together
+        linkAll
+      ]
   # show some data about the build
   if sgl.stats then fns.push showResult
   (bach.series fns) cbp
@@ -149,7 +159,8 @@ compileTop = (cb) -> compile 'pug', { top: yes }, cb
 linkAll = (cb) ->
   try
     res = sgl.top sgl.korrig
-    fse.writeFileSync './builds/korrig.html', res
+    p = if sgl.gh then 'index' else 'korrig'
+    fse.writeFileSync "./builds/#{p}.html", res
     cb null, 2
   catch e
     cb e, null
@@ -160,20 +171,15 @@ testServer = (_) ->
   app = (require 'http').createServer (req, res) ->
     res.writeHead 200, { 'Content-Type': 'text/html', 'dav': 1 }
     if req.method is 'PUT'
-      #
-      # TODO: validate the good work of the testing server
-      #
       data = ''
-      req.on 'data', chunk -> data += chunk
-      #
+      req.on 'data', (chunk) -> data += chunk
       req.on 'end', ->
         savePath = path.resolve cwd, 'builds', 'put-save.html'
         fse.writeFile savePath, data, (err) ->
           if err then throw err
-          outKb = (UInt8Array.from Buffer.from(data)).byteLength
+          outKb = (Uint8Array.from Buffer.from(data)).byteLength
           outKb = ((outKb * 0.000977).toFixed 3) + 'kB'
           console.info savePath, outKb
-      #
     url = req.url?.substring 1
     if url? and url.match(/\.\w+$/) and fse.existsSync(path.resolve cwd, url)
       res.end fse.readFileSync(path.resolve cwd, url)
@@ -222,15 +228,23 @@ task 'develop', '', ->
 
 task 'ghpages', '', ->
   sgl.stats = no
+  buildDoc = (cb) ->
+    sgl.gh = yes
+    cb null, 21
   moveToDoc = (cb) ->
-    fse.moveSync 'builds/korrig.html', 'docs/korrig.html'
-    cb null, 20
-  #
-  # TODO: build a Korrig version without any plugin
+    try
+      fse.mkdirs './docs'
+      fse.moveSync 'builds/*', 'docs/'
+      cb null, 20
+    catch e
+      if e.code is 'EEXIST'
+        fse.moveSync 'builds/*', 'docs/'
+        cb null, 20
+      else cb e, null
   #
   # TODO: build a Korrig version for the gh pages demonstration
   #
-  (bach.series buildKorrig, moveToDoc) finalCb
+  (bach.series buildKorrig, buildDoc, buildKorrig, moveToDoc) finalCb
 
 task 'testing', 'build & run a test server', ->
   (bach.series buildKorrig, testServer) finalCb
