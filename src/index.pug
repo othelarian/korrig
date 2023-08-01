@@ -12,25 +12,32 @@ html(lang='en')
     script#hsi(type='text/javascript')!= mirror
     script#hsm(type='text/javascript')!= app
   body(onload='Korrig.init()')
-    svg(xmlns='http://www.w3.org/2000/svg', width='0', height='0')
-      defs!= icons
+    svg(xmlns='http://www.w3.org/2000/svg', width='0', height='0', style='display:none')
+      defs!= font
     #kor-main-menu
       //
       // TODO: the menu
       //
       button(onclick='Korrig.savePut()') Save
+      //
+      svg.font(xmlns='http://www.w3.org/2000/svg')
+        use(href='#arrowBigUpDash')
+      //
     //
     #kor-left.panel
+      #kor-left-menu
       //
       // TODO: left panel
       //
       p(style='font-family:"lucide"') &#xf138;
     //
     #kor-right.panel
+      #kor-right-menu
       //
       // TODO: right panel
       //
     //
+    div(style='clear:both')
     #kor-splash
       div Welcome to Korrig!
       div App's loading...

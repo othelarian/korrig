@@ -4,7 +4,6 @@ Project Description
 
 ### TODO
 
-- [ ] Article system/plugin  
 - [ ] Article links  
 - [ ] Add plugins to build task🚀  
 - [ ] Tags system/plugin☕  
@@ -12,6 +11,10 @@ Project Description
 
 ### Prepared
 
+- [ ] Article system/plugin  
+- [ ] Article - list  
+- [ ] Article - create/edit  
+- [ ] Article - show  
 - [ ] Store system  
 - [ ] Spot test✅  
 
@@ -19,7 +22,6 @@ Project Description
 
 - [ ] resizing (panels)  
 - [ ] panels✨  
-- [ ] Add lucide icons  
 - [ ] GH pages task🚀  
 
 ### To Test
@@ -27,6 +29,7 @@ Project Description
 
 ### Done ✓
 
+- [x] Add lucide icons  
 - [x] splashscreen✨  
 - [x] server PUT mechanic☕  
 - [x] Dev server  
