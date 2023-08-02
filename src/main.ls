@@ -15,6 +15,7 @@ function q-sel s, a = no
 
 KorrigState =
   notif-id: -1
+  panel: \left
   server-op: no
 
 # APP ########################################
@@ -30,6 +31,13 @@ Korrig =
     #
     addEventListener \resize, Korrig.resizing
     #
+    a = q-sel 'svg.font'
+    #
+    console.log a
+    #
+    #for # TODO: fix svg font viewBox
+    #
+    #a.map (e) -> e.setAttribute \viewBox '0 0 24 24'
     q-sel '\#kor-splash' .style.display = \none
   notif-create: (type = \info, text = void, html = void) !->
     id = Korrig.notif-get-id!
