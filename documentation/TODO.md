@@ -4,6 +4,7 @@ Project Description
 
 ### TODO
 
+- [ ] ls parser plugin  
 - [ ] Article links  
 - [ ] Add plugins to build task🚀  
 - [ ] Tags system/plugin☕  
@@ -18,11 +19,14 @@ Project Description
 - [ ] Store system  
 - [ ] Spot test✅  
 
-### In Progress
+### Stopped
 
 - [ ] resizing (panels)  
 - [ ] panels✨  
 - [ ] GH pages task🚀  
+
+### In Progress
+
 
 ### To Test
 

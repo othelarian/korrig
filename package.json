@@ -4,6 +4,7 @@
   "description": "",
   "scripts": {
     "build": "cake build",
+    "cake": "cake",
     "clean": "cake clean",
     "develop": "cake develop",
     "github": "cake ghpages",

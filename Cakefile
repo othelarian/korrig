@@ -14,7 +14,9 @@ sgl = {
   cfg: null
   dev: no
   font: [
-    'arrowBigUpDash'
+    #'arrowBigUpDash'
+    'download'
+    'upload'
   ]
   gh: no
   korrig: {
@@ -92,7 +94,7 @@ buildKorrig = (cbp) ->
     clip = (h, s) ->
       s = s.substring s.search('>') + 2
       s = s.split '\n'
-      while  s[s.length] is '</svg>' then s.pop()
+      while s[s.length - 1] is '</svg>' or s[s.length - 1] is '' then s.pop()
       s = s.map (e) -> e.trim()
       "<symbol id=\"#{h}\">" + (s.join '') + '</symbol>'
     lst = sgl.font.map (e) -> clip e, lucide[e]
@@ -157,6 +159,8 @@ linkAll = (cb) ->
     res = sgl.top sgl.korrig
     p = if sgl.gh then 'index' else 'korrig'
     fse.writeFileSync "./builds/#{p}.html", res
+    stmp = new Date().toLocaleString()
+    console.log "#{stmp} => linking done"
     cb null, 2
   catch e
     cb e, null

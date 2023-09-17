@@ -13,24 +13,18 @@ html(lang='en')
     script#hsm(type='text/javascript')!= app
   body(onload='Korrig.init()')
     svg(xmlns='http://www.w3.org/2000/svg', width='0', height='0', style='display:none')
-      defs!= font
+      defs#hsf!= font
     #kor-main-menu
-      //
-      // TODO: the menu
-      //
-      button(onclick='Korrig.savePut()') Save
-      //
-      button
-        svg.font
-          use(href='#arrowBigUpDash')
-      //
+      button#kor-mm-dl(title='Download', onclick='Korrig.saveDl()')
+        svg.font: use(href='#download')
+      button#kor-mm-ul(title='Upload', onclick='Korrig.savePut()')
+        svg.font: use(href='#upload')
     //
     #kor-left.panel
       #kor-left-menu
       //
       // TODO: left panel
       //
-      p(style='font-family:"lucide"') &#xf138;
     //
     #kor-right.panel
       #kor-right-menu

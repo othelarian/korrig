@@ -31,13 +31,8 @@ Korrig =
     #
     addEventListener \resize, Korrig.resizing
     #
-    a = q-sel 'svg.font'
-    #
-    console.log a
-    #
-    #for # TODO: fix svg font viewBox
-    #
-    #a.map (e) -> e.setAttribute \viewBox '0 0 24 24'
+    #a = q-sel 'svg.font' yes
+    for e in (q-sel 'svg.font' yes) then e.setAttribute \viewBox '0 0 24 24'
     q-sel '\#kor-splash' .style.display = \none
   notif-create: (type = \info, text = void, html = void) !->
     id = Korrig.notif-get-id!
@@ -54,7 +49,9 @@ Korrig =
     #
     # TODO: handle resizing on panels
     #
-    console.log 'resizing occured'
+    #console.log 'resizing occured'
+    #
+    t = 2
     #
   save-detect: !->
     if location.protocol.startsWith 'http'
@@ -76,7 +73,8 @@ Korrig =
   save-dl: !->
     attrs =
       href: 'data:text/html;charset:utf-8,' + encodeURIComponent Korrig.save-gen!
-      download: location.href.split '/' .pop!
+      #download: location.href.split '/' .pop!
+      download: 'Korrig.html'
     e = c-elt \a, attrs
     document.body.appendChild e
     e.click!
@@ -85,6 +83,7 @@ Korrig =
     dt =
       app: q-sel '#hsm' .textContent
       data: q-sel '#hst' .textContent
+      font: q-sel '#hsf' .outerHTML .substring 15 .replace '</defs>' ''
       mirror: q-sel '#hsi' .textContent
       package:
         version: q-sel 'meta[name=version]' .content
