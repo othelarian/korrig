@@ -11,27 +11,115 @@ function q-sel s, a = no
   if a then document.querySelectorAll s
   else document.querySelector s
 
+function tog s, t
+  e = q-sel s
+  if t then e.removeAttribute \hidden else e.setAttribute \hidden ''
+
 # STORE ######################################
 
 KorrigState =
+  # functional part
   notif-id: -1
   panel: \left
   server-op: no
+  # datas part
+  articles: []
+  tags: []
+  # datas inferred part
+  titles: []
+
+# ARTICLE BLOCK ##############################
+
+Article =
+  list: (panel) !->
+    #
+    # TODO: show the current article list
+    #
+    a = q-sel '#kor-l-list-ctt'
+    if KorrigState.titles.length is 0
+      #
+      console.log 'there is no articles'
+      #
+    #
+    #
+    tog "\#kor-#{panel}-list" on
+
+# SAVE BLOCK #################################
+
+Save =
+  detect: !->
+    if location.protocol.startsWith 'http'
+      fetch location.pathname, { method: 'OPTIONS' }
+        .then (res) ->
+          if res.ok and res.headers.get 'dav'
+            KorrigState.server-op: yes
+            tog '#kor-mm-ul' on
+            Korrig.notif-create \success 'Server detected'
+          else
+            Korrig.notif-create \warning 'Warning! Failed to contact the save server'
+        .catch (e) ->
+          console.log 'Korrig error:'
+          console.log e
+          Korrig.notif-create \error 'Error on trying to contact the server'
+  dl: !->
+    attrs =
+      href: 'data:text/html;charset:utf-8,' + encodeURIComponent Korrig.save.gen!
+      #download: location.href.split '/' .pop!
+      download: 'Korrig.html'
+    e = c-elt \a, attrs
+    document.body.appendChild e
+    e.click!
+    document.body.removeChild e
+  gen: ->
+    dt =
+      app: q-sel \#hsm .textContent
+      data: q-sel \#hst .textContent
+      font: q-sel \#hsf .outerHTML .substring 15 .replace '</defs>' ''
+      mirror: q-sel \#hsi .textContent
+      package:
+        version: q-sel 'meta[name=version]' .content
+        name: q-sel 'meta[name=application-name]' .content
+      style: q-sel \#hms .textContent
+    korrigHtml dt
+  put: !->
+    fetch location.pathname, { method: \PUT, body: Korrig.save.gen! }
+      .then (resp) ->
+        resp.text!.then (txt) -> { ok: resp.ok, status: resp.status, text: txt }
+      .then (res) ->
+        if not res.ok
+          throw(if res.text? then res.text else "Status: #{res.status}")
+        else
+          Korrig.notif-create \success 'Doc saved on the Server!'
+      .catch (e) ->
+        console.log 'Korrig error:'
+        console.log e
+        Korrig.notif-create \error 'Failed to save on the server!'
+
+# SETTINGS BLOCK #############################
+
+Settings =
+  open: !->
+    #
+    # TODO: open the settings panel
+    #
+    console.log 'settings not ready'
+    #
 
 # APP ########################################
 
 Korrig =
+  article: Article
   init: !->
     console.log 'init Korrig App'
-    Korrig.save-detect!
+    Korrig.save.detect!
     #
-    # TODO: move from splashscreen to panels
+    # TODO: load datas
     #
     # TODO: load plugins
     #
-    addEventListener \resize, Korrig.resizing
+    # TODO: move from splashscreen to panels
     #
-    #a = q-sel 'svg.font' yes
+    addEventListener \resize, Korrig.resizing
     for e in (q-sel 'svg.font' yes) then e.setAttribute \viewBox '0 0 24 24'
     q-sel '\#kor-splash' .style.display = \none
   notif-create: (type = \info, text = void, html = void) !->
@@ -53,60 +141,8 @@ Korrig =
     #
     t = 2
     #
-  save-detect: !->
-    if location.protocol.startsWith 'http'
-      fetch location.pathname, { method: 'OPTIONS' }
-        .then (res) ->
-          if res.ok and res.headers.get 'dav'
-            KorrigState.server-op: yes
-            #
-            # TODO: activate the button?
-            #
-            console.log 'save server ok'
-            #
-          else
-            Korrig.notif-create \warning 'Warning! Failed to contact the save server'
-        .catch (e) ->
-          console.log 'Korrig error:'
-          console.log e
-          Korrig.notif-create \error 'Error on trying to contact the server'
-  save-dl: !->
-    attrs =
-      href: 'data:text/html;charset:utf-8,' + encodeURIComponent Korrig.save-gen!
-      #download: location.href.split '/' .pop!
-      download: 'Korrig.html'
-    e = c-elt \a, attrs
-    document.body.appendChild e
-    e.click!
-    document.body.removeChild e
-  save-gen: ->
-    dt =
-      app: q-sel '#hsm' .textContent
-      data: q-sel '#hst' .textContent
-      font: q-sel '#hsf' .outerHTML .substring 15 .replace '</defs>' ''
-      mirror: q-sel '#hsi' .textContent
-      package:
-        version: q-sel 'meta[name=version]' .content
-        name: q-sel 'meta[name=application-name]' .content
-      style: q-sel '#hms' .textContent
-    korrigHtml dt
-  save-put: !->
-    fetch location.pathname, { method: \PUT, body: Korrig.save-gen! }
-      .then (resp) ->
-        resp.text!.then (txt) -> { ok: resp.ok, status: resp.status, text: txt }
-      .then (res) ->
-        if not res.ok
-          throw(if res.text? then res.text else "Status: #{res.status}")
-        else
-          #
-          # TODO: do something to get that the file is now saved on the server
-          #
-          console.log 'everything\'s fine'
-          #
-      .catch (e) ->
-        console.log 'Korrig error:'
-        console.log e
-        Korrig.notif-create \error 'Failed to save on the server!'
+  save: Save
+  settings: Settings
 
 # EXPORT #####################################
 

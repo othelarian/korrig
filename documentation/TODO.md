@@ -4,6 +4,8 @@ Project Description
 
 ### TODO
 
+- [ ] timed notif (success)  
+- [ ] Article search system  
 - [ ] ls parser plugin  
 - [ ] Article links  
 - [ ] Add plugins to build task🚀  
@@ -13,20 +15,20 @@ Project Description
 ### Prepared
 
 - [ ] Article system/plugin  
-- [ ] Article - list  
-- [ ] Article - create/edit  
 - [ ] Article - show  
-- [ ] Store system  
 - [ ] Spot test✅  
 
 ### Stopped
 
 - [ ] resizing (panels)  
-- [ ] panels✨  
 - [ ] GH pages task🚀  
 
 ### In Progress
 
+- [ ] panels✨  
+- [ ] Article - list  
+- [ ] Article - create/edit  
+- [ ] Store system  
 
 ### To Test
 

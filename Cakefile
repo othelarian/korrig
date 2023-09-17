@@ -10,18 +10,25 @@ terser = require 'terser'
 
 # GLOBAL SINGLETON ##############################
 
+initData = {
+  articles: []
+  tags: []
+}
+
 sgl = {
   cfg: null
   dev: no
   font: [
-    #'arrowBigUpDash'
     'download'
+    'list'
+    'plus'
+    'settings'
     'upload'
   ]
   gh: no
   korrig: {
     app: ''
-    data: '{}'
+    data: JSON.stringify initData
     font: ''
     mirror: ''
     package: null

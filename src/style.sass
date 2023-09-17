@@ -2,6 +2,13 @@ body
   font-size: 12px
   margin: 0
 
+button
+  background: white
+  border: solid 1px black
+
+  &:hover
+    background: #ddd
+
 svg.font
   width: 20px
   height: 20px
@@ -11,18 +18,30 @@ svg.font
   stroke-linecap: round
   stroke-linejoin: round
 
-.panel
+.menu select
+  font-size: 17px
+
+.menu-sep
+  display: inline-block
+  margin: 0 3px
+  height: 16px
   border: solid 1px black
+
+.panel
   width: 49vw
   height: 90vh
 
-  &#kor-left
+  &#kor-l
     float: left
-    background: yellow
+    box-sizing: border-box
+    //background: #ffa
+    border-right: solid 1px #ddd
+    padding-left: 10px
   
-  &#kor-right
+  &#kor-r
     float: right
     background: pink
+    border: solid 1px black
 
 @media (max-width: 980px)
   .panel
@@ -49,12 +68,15 @@ svg.font
     font-size: 14px
     cursor: pointer
 
-    &.kor-notif-warning
-      background: orange
-
     &.kor-notif-error
       background: red
       color: white
+
+    &.kor-notif-success
+      background: #9f9
+
+    &.kor-notif-warning
+      background: orange
 
 #kor-splash
   position: absolute

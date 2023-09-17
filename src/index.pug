@@ -15,19 +15,34 @@ html(lang='en')
     svg(xmlns='http://www.w3.org/2000/svg', width='0', height='0', style='display:none')
       defs#hsf!= font
     #kor-main-menu
-      button#kor-mm-dl(title='Download', onclick='Korrig.saveDl()')
+      button#kor-mm-dl(title='Download', onclick='Korrig.save.dl()')
         svg.font: use(href='#download')
-      button#kor-mm-ul(title='Upload', onclick='Korrig.savePut()')
+      button#kor-mm-ul(title='Upload', onclick='Korrig.save.put()', hidden)
         svg.font: use(href='#upload')
-    //
-    #kor-left.panel
-      #kor-left-menu
+      button#kor-mm-set(title='Settings', onclick='Korrig.settings.open()')
+        svg.font: use(href='#settings')
+    #kor-l.panel
+      #kor-l-menu.menu
+        .menu-sep
+        button#kor-lm-list(title='Article list', onclick='Korrig.article.list("l")')
+          svg.font: use(href='#list')
+        button(title='Article create')
+          svg.font: use(href='#plus')
+        .menu-sep
+        select#kor-l-select
       //
       // TODO: left panel
       //
+      #kor-l-list(hidden)
+        h2 Article list
+        //
+        div (search here)
+        //
+        #kor-l-list-ctt
+      //
     //
-    #kor-right.panel
-      #kor-right-menu
+    #kor-r.panel
+      #kor-r-menu
       //
       // TODO: right panel
       //
