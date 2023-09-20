@@ -31,6 +31,9 @@ svg.font
   width: 49vw
   height: 90vh
 
+  &.folded
+    width: 45px
+
   &#kor-l
     float: left
     box-sizing: border-box
@@ -45,12 +48,18 @@ svg.font
 
 @media (max-width: 980px)
   .panel
-    width: calc(99vw - 80px)
+    width: calc(99vw - 60px)
+
+#kor-main
+  display: flex
 
 #kor-main-menu
   height: 35px
   padding: 4px
   margin-bottom: 4px
+
+#kor-r-menu
+  text-align: right
 
 #kor-notifs
   position: absolute
@@ -72,11 +81,23 @@ svg.font
       background: red
       color: white
 
+    &.kor-notif-info
+      background: white
+
     &.kor-notif-success
       background: #9f9
 
     &.kor-notif-warning
       background: orange
+
+#kor-title
+  flex-grow: 2
+  text-align: center
+  font-weight: bold
+  font-size: 20px
+
+#kor-l-tog, #kor-r-tog
+  text-align: center
 
 #kor-splash
   position: absolute

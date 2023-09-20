@@ -20,7 +20,8 @@ function tog s, t
 KorrigState =
   # functional part
   notif-id: -1
-  panel: \left
+  narrowed: no
+  panel: \l
   server-op: no
   # datas part
   articles: []
@@ -117,12 +118,13 @@ Korrig =
     #
     # TODO: load plugins
     #
-    # TODO: move from splashscreen to panels
-    #
+    if document.body.clientWidth <= 980
+      KorrigState.narrowed = yes
+      Korrig.panel-tog \r yes
     addEventListener \resize, Korrig.resizing
     for e in (q-sel 'svg.font' yes) then e.setAttribute \viewBox '0 0 24 24'
     q-sel '\#kor-splash' .style.display = \none
-  notif-create: (type = \info, text = void, html = void) !->
+  notif-create: (type = \info, text = void, html = void, tm = -1) !->
     id = Korrig.notif-get-id!
     attrs =
       class: "kor-notif-#type"
@@ -133,14 +135,27 @@ Korrig =
     q-sel '#kor-notifs' .appendChild e
   notif-get-id: -> KorrigState.notif-id += 1
   notif-rem: (id) !-> q-sel id .remove!
+  panel-open: (side, save = yes) !->
+    for e in (q-sel "\#kor-#{side}-menu, \#kor-#{side}-content" yes)
+      e.removeAttribute \hidden
+    q-sel "\#kor-#{side}" .classList.toggle \folded
+    q-sel "\#kor-#{side}-tog" .setAttribute \hidden true
+    if save then KorrigState.panel = side
+  panel-tog: (side, halfed = no) !->
+    for e in (q-sel "\#kor-#{side}-menu, \#kor-#{side}-content" yes)
+      e.setAttribute \hidden true
+    q-sel "\#kor-#{side}" .classList.toggle \folded
+    q-sel "\#kor-#{side}-tog" .removeAttribute \hidden
+    if not halfed then Korrig.panel-open (if side is \l then \r else \l)
   resizing: !->
-    #
-    # TODO: handle resizing on panels
-    #
-    #console.log 'resizing occured'
-    #
-    t = 2
-    #
+    if document.body.clientWidth <= 980
+      if not KorrigState.narrowed
+        KorrigState.narrowed = yes
+        Korrig.panel-tog (if KorrigState.panel is \r then \l else \r), yes
+    else
+      if KorrigState.narrowed
+        KorrigState.narrowed = no
+        Korrig.panel-open (if KorrigState.panel is \r then \l else \r), no
   save: Save
   settings: Settings
 

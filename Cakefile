@@ -21,6 +21,8 @@ sgl = {
   font: [
     'download'
     'list'
+    'panelLeftOpen'
+    'panelRightOpen'
     'plus'
     'settings'
     'upload'

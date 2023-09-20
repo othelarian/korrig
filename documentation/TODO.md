@@ -4,7 +4,8 @@ Project Description
 
 ### TODO
 
-- [ ] timed notif (success)  
+- [ ] settings => title  
+- [ ] Add title  
 - [ ] Article search system  
 - [ ] ls parser plugin  
 - [ ] Article links  
@@ -14,13 +15,13 @@ Project Description
 
 ### Prepared
 
+- [ ] timed notif (success)  
 - [ ] Article system/plugin  
 - [ ] Article - show  
 - [ ] Spot test✅  
 
 ### Stopped
 
-- [ ] resizing (panels)  
 - [ ] GH pages task🚀  
 
 ### In Progress
@@ -35,6 +36,7 @@ Project Description
 
 ### Done ✓
 
+- [x] panel sizing/resizing  
 - [x] Add lucide icons  
 - [x] splashscreen✨  
 - [x] server PUT mechanic☕  

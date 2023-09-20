@@ -14,38 +14,58 @@ html(lang='en')
   body(onload='Korrig.init()')
     svg(xmlns='http://www.w3.org/2000/svg', width='0', height='0', style='display:none')
       defs#hsf!= font
-    #kor-main-menu
-      button#kor-mm-dl(title='Download', onclick='Korrig.save.dl()')
-        svg.font: use(href='#download')
-      button#kor-mm-ul(title='Upload', onclick='Korrig.save.put()', hidden)
-        svg.font: use(href='#upload')
-      button#kor-mm-set(title='Settings', onclick='Korrig.settings.open()')
-        svg.font: use(href='#settings')
+    #kor-main
+      #kor-main-menu
+        button#kor-mm-dl(title='Download', onclick='Korrig.save.dl()')
+          svg.font: use(href='#download')
+        button#kor-mm-ul(title='Upload', onclick='Korrig.save.put()', hidden)
+          svg.font: use(href='#upload')
+        button#kor-mm-set(title='Settings', onclick='Korrig.settings.open()')
+          svg.font: use(href='#settings')
+      #kor-title Korrig
     #kor-l.panel
+      #kor-l-tog(hidden)
+        button(title='Show left panel', onclick='Korrig.panelTog("r")')
+          svg.font: use(href='#panelLeftOpen')
       #kor-l-menu.menu
         .menu-sep
         button#kor-lm-list(title='Article list', onclick='Korrig.article.list("l")')
           svg.font: use(href='#list')
-        button(title='Article create')
+        button(title='Article create', onclick='Korrig.article.create("l")')
           svg.font: use(href='#plus')
         .menu-sep
         select#kor-l-select
-      //
-      // TODO: left panel
-      //
-      #kor-l-list(hidden)
-        h2 Article list
+      #kor-l-content
         //
-        div (search here)
+        // TODO: left panel
         //
-        #kor-l-list-ctt
+        #kor-l-list(hidden)
+          h2 Article list
+          //
+          div (search here)
+          //
+          #kor-l-list-ctt
       //
-    //
     #kor-r.panel
-      #kor-r-menu
-      //
-      // TODO: right panel
-      //
+      #kor-r-tog(hidden)
+        button(title='Show right panel', onclick='Korrig.panelTog("l")')
+          svg.font: use(href='#panelRightOpen')
+      #kor-r-menu.menu
+        select#kor-r-select
+        .menu-sep
+        button(title='Article create')
+          //, onclick='Korrig.article.create("r")')
+          svg.font: use(href='#plus')
+        button#kor-rm-list(title='Article list')
+          //, onclick='Korrig.article.list("r")')
+          svg.font: use(href='#list')
+        .menu-sep
+      #kor-r-content
+        //
+        // TODO: right panel
+        //
+        p In progress
+        //
     //
     div(style='clear:both')
     #kor-splash
