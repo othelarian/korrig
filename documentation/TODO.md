@@ -4,6 +4,7 @@ Project Description
 
 ### TODO
 
+- [ ] setting => open in the opposite panel  
 - [ ] settings => title  
 - [ ] Add title  
 - [ ] Article search system  

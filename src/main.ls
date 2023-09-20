@@ -19,8 +19,10 @@ function tog s, t
 
 KorrigState =
   # functional part
-  notif-id: -1
+  create-id: -1
   narrowed: no
+  notif-id: -1
+  opened: []
   panel: \l
   server-op: no
   # datas part
@@ -32,6 +34,16 @@ KorrigState =
 # ARTICLE BLOCK ##############################
 
 Article =
+  create: (panel) !->
+    #
+    # TODO: create a new article
+    #
+    id = Korrig.article.get-id!
+    #
+    #
+    # TODO: add to KorrigState.opened
+    #
+  get-id: !-> KorrigState.create-id += 1
   list: (panel) !->
     #
     # TODO: show the current article list
