@@ -25,16 +25,16 @@ html(lang='en')
       #kor-title Korrig
     #kor-l.panel
       #kor-l-tog(hidden)
-        button(title='Show left panel', onclick='Korrig.panelTog("r")')
+        button(title='Show left panel', onclick='Korrig.panel.tog("r")')
           svg.font: use(href='#panelLeftOpen')
       #kor-l-menu.menu
         .menu-sep
         button#kor-lm-list(title='Article list', onclick='Korrig.article.list("l")')
           svg.font: use(href='#list')
-        button(title='Article create', onclick='Korrig.article.create("l")')
+        button(title='Article create', onclick='Korrig.article.create("l", "text")')
           svg.font: use(href='#plus')
         .menu-sep
-        select#kor-l-select
+        select#kor-l-select(hidden)
       #kor-l-content
         //
         // TODO: left panel
@@ -45,13 +45,24 @@ html(lang='en')
           div (search here)
           //
           #kor-l-list-ctt
+        #kor-l-article(hidden)
+          .article-bar
+            //
+            // TODO
+            //
+            p article bar
+            //
+          .article-title
+            //
+            //
+          .article-content
       //
     #kor-r.panel
       #kor-r-tog(hidden)
-        button(title='Show right panel', onclick='Korrig.panelTog("l")')
+        button(title='Show right panel', onclick='Korrig.panel.tog("l")')
           svg.font: use(href='#panelRightOpen')
       #kor-r-menu.menu
-        select#kor-r-select
+        select#kor-r-select(hidden, onchange='console.log("plop")')
         .menu-sep
         button(title='Article create')
           //, onclick='Korrig.article.create("r")')

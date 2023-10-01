@@ -20,6 +20,7 @@ function tog s, t
 KorrigState =
   # functional part
   create-id: -1
+  inits: []
   narrowed: no
   notif-id: -1
   opened: []
@@ -34,7 +35,14 @@ KorrigState =
 # ARTICLE BLOCK ##############################
 
 Article =
-  create: (panel) !->
+  bar:
+    text: ->
+      #
+      # TODO: generate text bar for article
+      #
+      a = 1
+      #
+  create: (side, type) !->
     #
     # TODO: create a new article
     #
@@ -43,8 +51,16 @@ Article =
     #
     # TODO: add to KorrigState.opened
     #
+    Korrig.panel.refresh-list!
+    Korrig.panel.swap side, \article
+  gen-bar: (side, type) !->
+    #
+    # TODO: populate the article bar
+    #
+    a = 1
+    #
   get-id: !-> KorrigState.create-id += 1
-  list: (panel) !->
+  list: (side) !->
     #
     # TODO: show the current article list
     #
@@ -54,8 +70,53 @@ Article =
       console.log 'there is no articles'
       #
     #
+    Korrig.panel.swap side, \list
+  show: !->
     #
-    tog "\#kor-#{panel}-list" on
+    # TODO
+    #
+    console.log 'show the article'
+    #
+  update: !->
+    #
+    # TODO: turned the currently showed article into edit mode
+    #
+    console.log 'edit the current article'
+    #
+
+# PANEL BLOCK ################################
+
+Panel =
+  init: ->
+    {
+      viewed: \none
+    }
+  open: (side, save = yes) !->
+    for e in (q-sel "\#kor-#{side}-menu, \#kor-#{side}-content" yes)
+      e.removeAttribute \hidden
+    q-sel "\#kor-#{side}" .classList.toggle \folded
+    q-sel "\#kor-#{side}-tog" .setAttribute \hidden true
+    if save then KorrigState.panel = side
+  swap: (side, target) !->
+    if target isnt KorrigState[side]
+      if KorrigState[side].viewed isnt \none then tog "\#kor-#{side}-#{KorrigState[side].viewed}" off
+      tog "\#kor-#{side}-#{target}" on
+      KorrigState[side].viewed = target
+  refresh-list: (type) !->
+    #
+    # TODO: refresh the list of opened articles/view
+    #
+    #switch type
+      #
+      #
+    console.log 'update the panels list (both)'
+    #
+  tog: (side, halfed = no) !->
+    for e in (q-sel "\#kor-#{side}-menu, \#kor-#{side}-content" yes)
+      e.setAttribute \hidden true
+    q-sel "\#kor-#{side}" .classList.toggle \folded
+    q-sel "\#kor-#{side}-tog" .removeAttribute \hidden
+    if not halfed then Korrig.panel.open (if side is \l then \r else \l)
 
 # SAVE BLOCK #################################
 
@@ -130,9 +191,14 @@ Korrig =
     #
     # TODO: load plugins
     #
+    for initiator in KorrigState.inits then initiator!
+    #
+    KorrigState.l = Panel.init!
+    KorrigState.r = Panel.init!
+    #
     if document.body.clientWidth <= 980
       KorrigState.narrowed = yes
-      Korrig.panel-tog \r yes
+      Korrig.panel.tog \r yes
     addEventListener \resize, Korrig.resizing
     for e in (q-sel 'svg.font' yes) then e.setAttribute \viewBox '0 0 24 24'
     q-sel '\#kor-splash' .style.display = \none
@@ -147,27 +213,16 @@ Korrig =
     q-sel '#kor-notifs' .appendChild e
   notif-get-id: -> KorrigState.notif-id += 1
   notif-rem: (id) !-> q-sel id .remove!
-  panel-open: (side, save = yes) !->
-    for e in (q-sel "\#kor-#{side}-menu, \#kor-#{side}-content" yes)
-      e.removeAttribute \hidden
-    q-sel "\#kor-#{side}" .classList.toggle \folded
-    q-sel "\#kor-#{side}-tog" .setAttribute \hidden true
-    if save then KorrigState.panel = side
-  panel-tog: (side, halfed = no) !->
-    for e in (q-sel "\#kor-#{side}-menu, \#kor-#{side}-content" yes)
-      e.setAttribute \hidden true
-    q-sel "\#kor-#{side}" .classList.toggle \folded
-    q-sel "\#kor-#{side}-tog" .removeAttribute \hidden
-    if not halfed then Korrig.panel-open (if side is \l then \r else \l)
+  panel: Panel
   resizing: !->
     if document.body.clientWidth <= 980
       if not KorrigState.narrowed
         KorrigState.narrowed = yes
-        Korrig.panel-tog (if KorrigState.panel is \r then \l else \r), yes
+        Korrig.panel.tog (if KorrigState.panel is \r then \l else \r), yes
     else
       if KorrigState.narrowed
         KorrigState.narrowed = no
-        Korrig.panel-open (if KorrigState.panel is \r then \l else \r), no
+        Korrig.panel.open (if KorrigState.panel is \r then \l else \r), no
   save: Save
   settings: Settings
 
