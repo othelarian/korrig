@@ -26,6 +26,8 @@ KorrigState =
   opened: []
   panel: \l
   server-op: no
+  settings:
+    open: no
   # datas part
   articles: []
   tags: []
@@ -42,12 +44,33 @@ Article =
       #
       a = 1
       #
+  base:
+    text: (id) ->
+      {
+        id: (new Date! .getTime!) + '-' + id
+        title: "New article ##{id}"
+        ctxt: ''
+        attrs: {}
+      }
+  close: (id) !->
+    #
+    # TODO: close an article
+    #
+    #
+    Korrig.panel.refresh-list \rem, id
+    #
   create: (side, type) !->
     #
     # TODO: create a new article
     #
     id = Korrig.article.get-id!
     #
+    ar = Korrig.article.base[type]!
+    #
+    console.log ar
+    #
+    KorrigState.articles.push ar
+    KorrigState.titles.push ar.title
     #
     # TODO: add to KorrigState.opened
     #
@@ -102,15 +125,27 @@ Panel =
       if KorrigState[side].viewed isnt \none then tog "\#kor-#{side}-#{KorrigState[side].viewed}" off
       tog "\#kor-#{side}-#{target}" on
       KorrigState[side].viewed = target
-  refresh-list: (type) !->
+  refresh-list: (type, id, txt = '') !->
     #
     # TODO: refresh the list of opened articles/view
     #
-    #switch type
-      #
-      #
-    console.log 'update the panels list (both)'
-    #
+    switch type
+      case \add
+        #
+        # TODO: add the last KorrigState.opened to the list
+        #
+        console.log 'adding to the list'
+        #
+        q-sel '#kor-l-select' .append(c-elt \option, {value: id}, txt)
+        q-sel '#kor-r-select' .append(c-elt \option, {value: id}, txt)
+        #
+      case \rem
+        #
+        # TODO: remove the option
+        #
+        ids = "\#kor-l-select option[value=#{id}], \#kor-r-select option[value=#{id}]"
+        for e in (q-sel ids) then e.remove!
+        #
   tog: (side, halfed = no) !->
     for e in (q-sel "\#kor-#{side}-menu, \#kor-#{side}-content" yes)
       e.setAttribute \hidden true
@@ -172,12 +207,34 @@ Save =
 # SETTINGS BLOCK #############################
 
 Settings =
+  close: !->
+    #
+    # TODO: close the settings view
+    #
+    # TODO: what to swap to? Add this to settings
+    #
+    Korrig.panel.refresh-list \rem \settings
+    #
   open: !->
     #
     # TODO: open the settings panel
     #
-    console.log 'settings not ready'
-    #
+    if KorrigState.settings.open
+      #
+      # TODO: swap to show settings
+      #
+      console.log 'show opened settings'
+      #
+    else
+      #
+      #
+      #
+      KorrigState.settings.open = yes
+      #
+      #Korrig.panel.swap
+      #
+      Korrig.panel.refresh-list \add \settings \Settings
+      #
 
 # APP ########################################
 

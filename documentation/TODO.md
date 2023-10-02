@@ -4,10 +4,9 @@ Project Description
 
 ### TODO
 
+- [ ] setting => what to show when closing an article  
 - [ ] setting => open in the opposite panel  
 - [ ] settings => title  
-- [ ] Add title  
-- [ ] Article search system  
 - [ ] ls parser plugin  
 - [ ] Article links  
 - [ ] Add plugins to build task🚀  
@@ -16,6 +15,8 @@ Project Description
 
 ### Prepared
 
+- [ ] Add title  
+- [ ] Article search system  
 - [ ] timed notif (success)  
 - [ ] Article system/plugin  
 - [ ] Article - show  
@@ -27,10 +28,12 @@ Project Description
 
 ### In Progress
 
+- [ ] Panel => list of opened views  
 - [ ] panels✨  
 - [ ] Article - list  
 - [ ] Article - create/edit  
 - [ ] Store system  
+- [ ] Settings view  
 
 ### To Test
 

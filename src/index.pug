@@ -1,3 +1,36 @@
+mixin panelContent(side)
+  div(id='kor-'+side+'-content')
+    div(id='kor-'+side+'-settings', hidden)
+      .settings-bar
+        h2 Settings
+        //
+        button(onclick='Korrig.settings.close()') close
+        //
+      //
+      ul
+        li (Title)
+        li (open in the opposite panel)
+      //
+    div(id='kor-'+side+'-list', hidden)
+      h2 Article list
+      //
+      div (search here)
+      //
+      div
+      //
+    div(id='kor-'+side+'-article', hidden)
+      .article-bar
+        //
+        // TODO: create the bar to act upon the articles
+        //
+        p article bar
+        //
+      .article-title
+        //
+        //
+      .article-content
+        //
+        //
 doctype html
 html(lang='en')
   head
@@ -35,28 +68,7 @@ html(lang='en')
           svg.font: use(href='#plus')
         .menu-sep
         select#kor-l-select(hidden)
-      #kor-l-content
-        //
-        // TODO: left panel
-        //
-        #kor-l-list(hidden)
-          h2 Article list
-          //
-          div (search here)
-          //
-          #kor-l-list-ctt
-        #kor-l-article(hidden)
-          .article-bar
-            //
-            // TODO
-            //
-            p article bar
-            //
-          .article-title
-            //
-            //
-          .article-content
-      //
+      +panelContent('l')
     #kor-r.panel
       #kor-r-tog(hidden)
         button(title='Show right panel', onclick='Korrig.panel.tog("l")')
@@ -64,20 +76,12 @@ html(lang='en')
       #kor-r-menu.menu
         select#kor-r-select(hidden, onchange='console.log("plop")')
         .menu-sep
-        button(title='Article create')
-          //, onclick='Korrig.article.create("r")')
+        button(title='Article create', onclick='Korrig.article.create("r", "text")')
           svg.font: use(href='#plus')
-        button#kor-rm-list(title='Article list')
-          //, onclick='Korrig.article.list("r")')
+        button#kor-rm-list(title='Article list', onclick='Korrig.article.list("r")')
           svg.font: use(href='#list')
         .menu-sep
-      #kor-r-content
-        //
-        // TODO: right panel
-        //
-        p In progress
-        //
-    //
+      +panelConten('r')
     div(style='clear:both')
     #kor-splash
       div Welcome to Korrig!
