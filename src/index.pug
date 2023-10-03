@@ -4,7 +4,8 @@ mixin panelContent(side)
       .settings-bar
         h2 Settings
         //
-        button(onclick='Korrig.settings.close()') close
+        //
+        button(ttle='Close', onclick='Korrig.settings.close()') close
         //
       //
       ul
@@ -23,7 +24,13 @@ mixin panelContent(side)
         //
         // TODO: create the bar to act upon the articles
         //
-        p article bar
+        button(title='Edit', onclick= '') Edit
+        //
+        button(title='Save', onclick='') Save
+        //
+        .menu-sep
+        //
+        button(title='Close', onclick='') Close
         //
       .article-title
         //
@@ -81,7 +88,7 @@ html(lang='en')
         button#kor-rm-list(title='Article list', onclick='Korrig.article.list("r")')
           svg.font: use(href='#list')
         .menu-sep
-      +panelConten('r')
+      +panelContent('r')
     div(style='clear:both')
     #kor-splash
       div Welcome to Korrig!

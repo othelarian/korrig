@@ -11,8 +11,8 @@ function q-sel s, a = no
   if a then document.querySelectorAll s
   else document.querySelector s
 
-function tog s, t
-  e = q-sel s
+function tog s, t, a = no
+  e = q-sel s, a
   if t then e.removeAttribute \hidden else e.setAttribute \hidden ''
 
 # STORE ######################################
@@ -23,13 +23,17 @@ KorrigState =
   inits: []
   narrowed: no
   notif-id: -1
-  opened: []
   panel: \l
   server-op: no
-  settings:
-    open: no
+  timer-id: -1
+  timers: {}
+  views:
+    opened: []
+    settings:
+      open: no
   # datas part
-  articles: []
+  articles: {}
+  settings: {}
   tags: []
   # datas inferred part
   titles: []
@@ -45,13 +49,13 @@ Article =
       a = 1
       #
   base:
-    text: (id) ->
+    common: ->
       {
-        id: (new Date! .getTime!) + '-' + id
         title: "New article ##{id}"
         ctxt: ''
         attrs: {}
       }
+    text: (article) -> article.type = \text
   close: (id) !->
     #
     # TODO: close an article
@@ -63,16 +67,13 @@ Article =
     #
     # TODO: create a new article
     #
-    id = Korrig.article.get-id!
+    id = (new Date! .getTime!) + '-' + Korrig.article.get-id!
+    ar = Korrig.article.base[type] id
     #
-    ar = Korrig.article.base[type]!
-    #
-    console.log ar
-    #
-    KorrigState.articles.push ar
+    KorrigState.articles[id] = ar
     KorrigState.titles.push ar.title
     #
-    # TODO: add to KorrigState.opened
+    # TODO: add to KorrigState.views.opened
     #
     Korrig.panel.refresh-list!
     Korrig.panel.swap side, \article
@@ -82,7 +83,7 @@ Article =
     #
     a = 1
     #
-  get-id: !-> KorrigState.create-id += 1
+  get-id: -> KorrigState.create-id += 1
   list: (side) !->
     #
     # TODO: show the current article list
@@ -132,7 +133,9 @@ Panel =
     switch type
       case \add
         #
-        # TODO: add the last KorrigState.opened to the list
+        # TODO: add the last KorrigState.views.opened to the list
+        #
+        if KorrigState.views.opened.length is 1 then tog '#kor-r-select, #kor-l-select' on yes
         #
         console.log 'adding to the list'
         #
@@ -163,7 +166,7 @@ Save =
           if res.ok and res.headers.get 'dav'
             KorrigState.server-op: yes
             tog '#kor-mm-ul' on
-            Korrig.notif-create \success 'Server detected'
+            Korrig.notif-create \success 'Server detected' void 10_000
           else
             Korrig.notif-create \warning 'Warning! Failed to contact the save server'
         .catch (e) ->
@@ -182,7 +185,13 @@ Save =
   gen: ->
     dt =
       app: q-sel \#hsm .textContent
-      data: q-sel \#hst .textContent
+      #data: q-sel \#hst .textContent
+      data:
+        {
+          articles: KorrigState.articles
+          settings: KorrigState.settings
+          tags: KorrigState.tags
+        } |> JSON.stringify
       font: q-sel \#hsf .outerHTML .substring 15 .replace '</defs>' ''
       mirror: q-sel \#hsi .textContent
       package:
@@ -190,6 +199,11 @@ Save =
         name: q-sel 'meta[name=application-name]' .content
       style: q-sel \#hms .textContent
     korrigHtml dt
+  load: !->
+    d = q-sel \#hst .textContent |> JSON.parse
+    KorrigState.articles = d.articles
+    KorrigState.settings = d.settings
+    KorrigState.tags = d.tags
   put: !->
     fetch location.pathname, { method: \PUT, body: Korrig.save.gen! }
       .then (resp) ->
@@ -219,7 +233,7 @@ Settings =
     #
     # TODO: open the settings panel
     #
-    if KorrigState.settings.open
+    if KorrigState.views.settings.open
       #
       # TODO: swap to show settings
       #
@@ -229,7 +243,7 @@ Settings =
       #
       #
       #
-      KorrigState.settings.open = yes
+      KorrigState.views.settings.open = yes
       #
       #Korrig.panel.swap
       #
@@ -241,23 +255,19 @@ Settings =
 Korrig =
   article: Article
   init: !->
-    console.log 'init Korrig App'
-    Korrig.save.detect!
-    #
-    # TODO: load datas
+    Korrig.save.load!
     #
     # TODO: load plugins
     #
     for initiator in KorrigState.inits then initiator!
     #
-    KorrigState.l = Panel.init!
-    KorrigState.r = Panel.init!
-    #
+    for p in ["l", "r"] then KorrigState[p] = Panel.init!
     if document.body.clientWidth <= 980
       KorrigState.narrowed = yes
       Korrig.panel.tog \r yes
     addEventListener \resize, Korrig.resizing
     for e in (q-sel 'svg.font' yes) then e.setAttribute \viewBox '0 0 24 24'
+    Korrig.save.detect!
     q-sel '\#kor-splash' .style.display = \none
   notif-create: (type = \info, text = void, html = void, tm = -1) !->
     id = Korrig.notif-get-id!
@@ -265,9 +275,20 @@ Korrig =
       class: "kor-notif-#type"
       title: 'Click to close'
       id: "kor-notif-#{id}"
-      onclick: "Korrig.notifRem('\#kor-notif-#{id}')"
+      onclick:
+        if tm is -1 then "Korrig.notifRem('\#kor-notif-#{id}')"
+        else "Korrig.timerRun('#{id}')"
+    if tm > -1
+      KorrigState.timers["tm-#{id}"] =
+        ctm: void
+        fn: (id, silent = no) !->
+          if silent then window.clearTimeout KorrigState.timers["tm-#{id}"].ctm
+          Korrig.notifRem "\#kor-notif-#{id}"
+          delete KorrigState.timers["tm-#{id}"]
     e = c-elt \div, attrs, text, html
     q-sel '#kor-notifs' .appendChild e
+    if tm > -1 then KorrigState.timers["tm-#{id}"].ctm =
+      window.setTimeout (!-> KorrigState.timers["tm-#{id}"]fn id), tm
   notif-get-id: -> KorrigState.notif-id += 1
   notif-rem: (id) !-> q-sel id .remove!
   panel: Panel
@@ -282,6 +303,8 @@ Korrig =
         Korrig.panel.open (if KorrigState.panel is \r then \l else \r), no
   save: Save
   settings: Settings
+  timer-get-id: -> KorrigState.timer-id += 1
+  timer-run: (id) !-> KorrigState.timers["tm-#{id}"]fn id, yes
 
 # EXPORT #####################################
 

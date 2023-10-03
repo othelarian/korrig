@@ -11,8 +11,13 @@ terser = require 'terser'
 # GLOBAL SINGLETON ##############################
 
 initData = {
-  articles: []
+  articles: {}
+  #articles: {'id-plop': {title: 'it is an article', content: 'an article'}}
+  settings: {
+    title: 'Korrig'
+  }
   tags: []
+  #tags: ["a tag"]
 }
 
 sgl = {

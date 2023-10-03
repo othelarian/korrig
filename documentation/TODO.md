@@ -4,6 +4,8 @@ Project Description
 
 ### TODO
 
+- [ ] Save => use the title for the download name  
+- [ ] setting => override download name  
 - [ ] setting => what to show when closing an article  
 - [ ] setting => open in the opposite panel  
 - [ ] settings => title  
@@ -15,10 +17,7 @@ Project Description
 
 ### Prepared
 
-- [ ] Add title  
 - [ ] Article search system  
-- [ ] timed notif (success)  
-- [ ] Article system/plugin  
 - [ ] Article - show  
 - [ ] Spot test✅  
 
@@ -29,17 +28,20 @@ Project Description
 ### In Progress
 
 - [ ] Panel => list of opened views  
-- [ ] panels✨  
 - [ ] Article - list  
 - [ ] Article - create/edit  
-- [ ] Store system  
 - [ ] Settings view  
+- [ ] Article system/plugin  
 
 ### To Test
 
 
 ### Done ✓
 
+- [x] timed notif (success)  
+- [x] panels✨  
+- [x] Store system  
+- [x] Add title  
 - [x] panel sizing/resizing  
 - [x] Add lucide icons  
 - [x] splashscreen✨  
