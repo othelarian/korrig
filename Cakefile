@@ -28,9 +28,12 @@ sgl = {
     'list'
     'panelLeftOpen'
     'panelRightOpen'
+    'pencil'
     'plus'
+    'save'
     'settings'
     'upload'
+    'x'
   ]
   gh: no
   korrig: {

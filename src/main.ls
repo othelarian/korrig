@@ -12,8 +12,9 @@ function q-sel s, a = no
   else document.querySelector s
 
 function tog s, t, a = no
-  e = q-sel s, a
-  if t then e.removeAttribute \hidden else e.setAttribute \hidden ''
+  r = q-sel s, a
+  if not a then r = [r]
+  for e in r then if t then e.removeAttribute \hidden else e.setAttribute \hidden ''
 
 # STORE ######################################
 
@@ -28,7 +29,7 @@ KorrigState =
   timer-id: -1
   timers: {}
   views:
-    opened: []
+    opened: {}
     settings:
       open: no
   # datas part
@@ -49,13 +50,11 @@ Article =
       a = 1
       #
   base:
-    common: ->
-      {
-        title: "New article ##{id}"
-        ctxt: ''
-        attrs: {}
-      }
-    text: (article) -> article.type = \text
+    common: (id) -> title: "New article", ctxt: '', attrs: {}
+    text: (id) ->
+      article = Korrig.article.base.common id
+      article.type = \text
+      article
   close: (id) !->
     #
     # TODO: close an article
@@ -70,12 +69,19 @@ Article =
     id = (new Date! .getTime!) + '-' + Korrig.article.get-id!
     ar = Korrig.article.base[type] id
     #
+    console.log 'article'
+    console.log ar
+    #
     KorrigState.articles[id] = ar
     KorrigState.titles.push ar.title
     #
-    # TODO: add to KorrigState.views.opened
+    KorrigState.views.opened[id] = status: \edit
     #
-    Korrig.panel.refresh-list!
+    # TODO: how to tell that this one is opened here?
+    #
+    # TODO: handle the article menu bar
+    #
+    Korrig.panel.refresh-list \add, id, ar.title
     Korrig.panel.swap side, \article
   gen-bar: (side, type) !->
     #
@@ -111,13 +117,10 @@ Article =
 # PANEL BLOCK ################################
 
 Panel =
-  init: ->
-    {
-      viewed: \none
-    }
+  init: -> { viewed: \list }
   open: (side, save = yes) !->
     for e in (q-sel "\#kor-#{side}-menu, \#kor-#{side}-content" yes)
-      e.removeAttribute \hidden
+      e.style.display = \flex
     q-sel "\#kor-#{side}" .classList.toggle \folded
     q-sel "\#kor-#{side}-tog" .setAttribute \hidden true
     if save then KorrigState.panel = side
@@ -132,26 +135,26 @@ Panel =
     #
     switch type
       case \add
+        if Object.keys KorrigState.views.opened .length is 1
+          tog '#kor-r-select, #kor-l-select' on yes
+        tt = txt + (if KorrigState.views.opened[id].status is \edit then ' (*)' else '')
+        for s in [\l, \r] then q-sel "\#kor-#{s}-select" .append(c-elt \option, {value: id}, tt)
         #
-        # TODO: add the last KorrigState.views.opened to the list
-        #
-        if KorrigState.views.opened.length is 1 then tog '#kor-r-select, #kor-l-select' on yes
-        #
-        console.log 'adding to the list'
-        #
-        q-sel '#kor-l-select' .append(c-elt \option, {value: id}, txt)
-        q-sel '#kor-r-select' .append(c-elt \option, {value: id}, txt)
+        # TODO: moving to the new opened article?
         #
       case \rem
         #
         # TODO: remove the option
+        #
+        if Object.keys KorrigState.views.opened .length is 0
+          tog '#kor-r-select, #kor-l-select' off yes
         #
         ids = "\#kor-l-select option[value=#{id}], \#kor-r-select option[value=#{id}]"
         for e in (q-sel ids) then e.remove!
         #
   tog: (side, halfed = no) !->
     for e in (q-sel "\#kor-#{side}-menu, \#kor-#{side}-content" yes)
-      e.setAttribute \hidden true
+      e.style.display = \none
     q-sel "\#kor-#{side}" .classList.toggle \folded
     q-sel "\#kor-#{side}-tog" .removeAttribute \hidden
     if not halfed then Korrig.panel.open (if side is \l then \r else \l)
@@ -166,7 +169,7 @@ Save =
           if res.ok and res.headers.get 'dav'
             KorrigState.server-op: yes
             tog '#kor-mm-ul' on
-            Korrig.notif-create \success 'Server detected' void 10_000
+            Korrig.notif-create \success 'Server detected' void 6_000
           else
             Korrig.notif-create \warning 'Warning! Failed to contact the save server'
         .catch (e) ->

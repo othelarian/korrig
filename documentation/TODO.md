@@ -17,6 +17,7 @@ Project Description
 
 ### Prepared
 
+- [ ] Panel => adding a star to article's name in edit mode, in the list  
 - [ ] Article search system  
 - [ ] Article - show  
 - [ ] Spot test✅  

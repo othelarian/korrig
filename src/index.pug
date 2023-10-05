@@ -12,7 +12,7 @@ mixin panelContent(side)
         li (Title)
         li (open in the opposite panel)
       //
-    div(id='kor-'+side+'-list', hidden)
+    div(id='kor-'+side+'-list')
       h2 Article list
       //
       div (search here)
@@ -21,16 +21,22 @@ mixin panelContent(side)
       //
     div(id='kor-'+side+'-article', hidden)
       .article-bar
+        hr
         //
         // TODO: create the bar to act upon the articles
         //
-        button(title='Edit', onclick= '') Edit
+        .normal-mode
+          button(title='Edit', onclick= '')
+            svg.font: use(href="#pencil")
         //
-        button(title='Save', onclick='') Save
+        .edit-mode
+          button(title='Save', onclick='')
+            svg.font: use(href="#save")
         //
         .menu-sep
         //
-        button(title='Close', onclick='') Close
+        button(title='Close', onclick='')
+          svg.font: use(href="#x")
         //
       .article-title
         //
@@ -75,6 +81,7 @@ html(lang='en')
           svg.font: use(href='#plus')
         .menu-sep
         select#kor-l-select(hidden)
+          option(value='list') -- Startup --
       +panelContent('l')
     #kor-r.panel
       #kor-r-tog(hidden)
@@ -82,6 +89,7 @@ html(lang='en')
           svg.font: use(href='#panelRightOpen')
       #kor-r-menu.menu
         select#kor-r-select(hidden, onchange='console.log("plop")')
+          option(value='list') -- Startup --
         .menu-sep
         button(title='Article create', onclick='Korrig.article.create("r", "text")')
           svg.font: use(href='#plus')
